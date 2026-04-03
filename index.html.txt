@@ -1,0 +1,695 @@
+!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rizal Trans | Partner Transportasi Terpercaya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --fg-primary: #0f172a;
+            --fg-secondary: #475569;
+            --fg-muted: #94a3b8;
+            --accent: #0ea5e9; /* Sky Blue */
+            --accent-dark: #0284c7;
+            --accent-light: #e0f2fe;
+            --accent-glow: rgba(14, 165, 233, 0.2);
+            --card: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-primary); color: var(--fg-primary); overflow-x: hidden; }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 10000;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        #splash-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .splash-logo {
+            font-size: 3.5rem; font-weight: 800; color: var(--accent);
+            overflow: hidden; white-space: nowrap; letter-spacing: -2px;
+            border-right: 4px solid var(--accent);
+            animation: typing 2s steps(12) forwards, blink 0.7s step-end infinite;
+        }
+        @keyframes typing { from { width: 0; } to { width: 100%; } }
+        @keyframes blink { 50% { border-color: transparent; } }
+        .splash-subtitle { margin-top: 1rem; font-size: 1rem; color: var(--fg-secondary); opacity: 0; animation: fadeIn 1s ease forwards 1.5s; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 20px; }
+
+        /* Canvas Background */
+        #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+        /* Animations */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent); color: white; font-weight: 600; padding: 14px 32px;
+            border-radius: 50px; border: none; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 14px var(--accent-glow);
+        }
+        .btn-primary:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+        
+        .btn-wa {
+            background: #25D366; color: white; font-weight: 600; padding: 14px 32px; border-radius: 50px;
+            border: none; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 14px rgba(37, 211, 102, 0.2);
+        }
+        .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3); }
+
+        .btn-outline {
+            background: transparent; color: var(--accent); font-weight: 600; padding: 14px 32px;
+            border-radius: 50px; border: 2px solid var(--accent); cursor: pointer; transition: all 0.3s ease;
+        }
+        .btn-outline:hover { background: var(--accent-light); }
+
+        /* Forms */
+        .form-input {
+            width: 100%; padding: 16px 20px; background: var(--bg-secondary);
+            border: 1px solid var(--border); border-radius: 12px; color: var(--fg-primary);
+            font-size: 15px; transition: all 0.3s ease;
+        }
+        .form-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); background: white; }
+
+        /* Cards */
+        .card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 24px;
+            overflow: hidden; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+
+        /* Float WA Button */
+        .whatsapp-float {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: #25D366; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.3);
+            z-index: 100; cursor: pointer; transition: all 0.3s ease;
+        }
+        .whatsapp-float:hover { transform: scale(1.1) rotate(10deg); }
+        .whatsapp-float svg { width: 32px; height: 32px; fill: white; }
+
+        /* Nav */
+        .nav-link { position: relative; color: var(--fg-secondary); font-weight: 500; transition: color 0.3s ease; }
+        .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--accent); transition: width 0.3s ease; border-radius: 2px; }
+        .nav-link:hover { color: var(--accent); }
+        .nav-link:hover::after { width: 100%; }
+
+        /* Gallery Grid */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+        .gallery-item { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; cursor: pointer; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.8), transparent); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: flex-end; padding: 1.5rem; }
+        .gallery-item:hover .gallery-overlay { opacity: 1; }
+        
+        /* Hero Wave */
+        .hero-wave { position: absolute; bottom: 0; left: 0; width: 100%; overflow: hidden; line-height: 0; }
+        .hero-wave svg { position: relative; display: block; width: calc(100% + 1.3px); height: 80px; }
+        .hero-wave .shape-fill { fill: var(--bg-secondary); }
+
+        /* Fleet Image */
+        .fleet-img { width: 100%; height: 280px; object-fit: cover; transition: transform 0.5s ease; }
+        .card:hover .fleet-img { transform: scale(1.05); }
+
+        /* Facilities Badge */
+        .facility-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--accent-light); color: var(--accent-dark); border-radius: 50px; font-size: 0.875rem; font-weight: 500; }
+
+        /* Map Container */
+        .map-container { border-radius: 24px; overflow: hidden; border: 1px solid var(--border); height: 450px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .map-container iframe { width: 100%; height: 100%; border: 0; }
+
+        /* Social Icons */
+        .social-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-tertiary); color: var(--fg-secondary); transition: all 0.3s ease; }
+        .social-icon:hover { background: var(--accent); color: white; transform: translateY(-3px); }
+
+        /* Mobile Menu */
+        .mobile-menu { position: fixed; top: 0; right: -100%; width: 80%; max-width: 400px; height: 100vh; background: white; z-index: 1000; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); padding: 100px 40px; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
+        .mobile-menu.active { right: 0; }
+        .mobile-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.2); z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .mobile-overlay.active { opacity: 1; visibility: visible; }
+
+        @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+        @media (max-width: 768px) { .splash-logo { font-size: 2.5rem; } }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-logo">Rizal Trans</div>
+        <div class="splash-subtitle">Partner Transportasi Terpercaya</div>
+    </div>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/6281320900893?text=Halo%20Rizal%20Trans,%20saya%20ingin%20bertanya%20tentang%20layanan%20transportasi." target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    </a>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="#" class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2M5 17l-1 4h2m12-4l1 4h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-slate-800">Rizal Trans</span>
+                </a>
+                
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#fleet" class="nav-link">Armada</a>
+                    <a href="#galeri-bus" class="nav-link">Galeri Bus</a>
+                    <a href="#layanan" class="nav-link">Layanan</a>
+                    <a href="#contact" class="nav-link">Kontak</a>
+                    <a href="#booking" class="btn-primary text-sm py-2 px-5">Pesan Sekarang</a>
+                </div>
+
+                <button class="md:hidden p-2" id="menu-toggle" aria-label="Toggle menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="absolute top-6 right-6" id="menu-close" aria-label="Close menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="flex flex-col gap-6">
+            <a href="#fleet" class="text-2xl font-semibold mobile-link text-slate-800">Armada</a>
+            <a href="#galeri-bus" class="text-2xl font-semibold mobile-link text-slate-800">Galeri Bus</a>
+            <a href="#layanan" class="text-2xl font-semibold mobile-link text-slate-800">Layanan</a>
+            <a href="#contact" class="text-2xl font-semibold mobile-link text-slate-800">Kontak</a>
+            <hr class="border-gray-200 my-4">
+            <button class="btn-primary w-full" onclick="window.open('https://wa.me/6281320900893', '_blank')">Hubungi Kami</button>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center bg-slate-50 overflow-hidden">
+        <canvas id="particle-canvas"></canvas>
+        <div class="absolute top-20 right-0 w-[600px] h-[600px] bg-sky-100 rounded-full blur-3xl opacity-60 -z-10"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sky-200 rounded-full blur-3xl opacity-40 -z-10"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 py-32 grid lg:grid-cols-2 gap-12 items-center">
+            <div class="relative z-10">
+                <span class="inline-block px-4 py-2 rounded-full bg-sky-100 text-sky-600 text-sm font-semibold mb-6 reveal">
+                    Partner Transportasi Terpercaya
+                </span>
+                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-slate-900 reveal" style="transition-delay: 0.1s">
+                    Perjalanan Nyaman,<br>
+                    <span class="text-sky-500">Sampai Tujuan.</span>
+                </h1>
+                <p class="text-lg text-slate-600 mb-8 max-w-lg reveal" style="transition-delay: 0.2s">
+                    Rizal Trans menyediakan layanan transportasi profesional untuk bisnis dan pribadi. Nikmati armada terawat dengan fasilitas premium.
+                </p>
+                <div class="flex flex-wrap gap-4 reveal" style="transition-delay: 0.3s">
+                    <a href="#booking" class="btn-primary">Pesan Sekarang</a>
+                    <a href="#galeri-bus" class="btn-outline">Lihat Armada</a>
+                </div>
+            </div>
+            
+            <div class="relative reveal-scale" style="transition-delay: 0.4s">
+                <img src="bus.jpg" alt="Bus Rizal Trans" class="rounded-3xl shadow-2xl w-full h-auto border border-white/50 relative z-10">
+                <!-- Floating Card -->
+                <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-xl border border-slate-100 z-20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div>
+                            <div class="text-xs text-slate-500">Terverifikasi</div>
+                            <div class="font-bold text-slate-800">500+ Perjalanan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-wave">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,00321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Fleet Section -->
+    <section id="fleet" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-slate-900 reveal">Pilihan Armada</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto reveal">Kami menyediakan pilihan kendaraan terbaik untuk memenuhi kebutuhan transportasi Anda.</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Card Bus -->
+                <div class="card reveal-left bg-white group">
+                    <div class="overflow-hidden">
+                        <img src="poto.jpg" alt="Bus Eksekutif" class="fleet-img">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="text-xs text-sky-500 uppercase font-bold tracking-wider">Group Transport</span>
+                                <h3 class="text-2xl font-bold text-slate-800 mt-1">Bus Eksekutif</h3>
+                            </div>
+                            <span class="px-4 py-1 bg-sky-50 text-sky-600 rounded-full text-sm font-semibold">Tersedia</span>
+                        </div>
+                        <p class="text-slate-500 mb-6">Ideal untuk rombongan besar, antar kota, dan wisata. Kapasitas 59 penumpang dengan fasilitas lengkap.</p>
+                        <div class="flex flex-wrap gap-2 mb-8">
+                            <span class="facility-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v10l4.5 4.5"/><circle cx="12" cy="12" r="10"/></svg> 59 Kursi</span>
+                            <span class="facility-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg> WiFi</span>
+                            <span class="facility-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/><circle cx="12" cy="12" r="4"/></svg> AC Dingin</span>
+                        </div>
+                        <button class="btn-wa w-full" onclick="bookVehicle('Bus Eksekutif')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            Pesan via WhatsApp
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Card Mobil -->
+                <div class="card reveal-right bg-white group">
+                    <div class="overflow-hidden">
+                        <img src="avanza.jpg" alt="Mobil Eksekutif" class="fleet-img">
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="text-xs text-sky-500 uppercase font-bold tracking-wider">Private Transport</span>
+                                <h3 class="text-2xl font-bold text-slate-800 mt-1">Mobil Eksekutif</h3>
+                            </div>
+                            <span class="px-4 py-1 bg-sky-50 text-sky-600 rounded-full text-sm font-semibold">Tersedia</span>
+                        </div>
+                        <p class="text-slate-500 mb-6">Pilihan tepat untuk perjalanan bisnis, antar jemput bandara, dan keperluan pribadi eksklusif.</p>
+                        <div class="flex flex-wrap gap-2 mb-8">
+                            <span class="facility-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> 6 Penumpang</span>
+                            <span class="facility-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/></svg> avanza</span>
+                            <span class="facility-badge"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Sopir</span>
+                        </div>
+                        <button class="btn-wa w-full" onclick="bookVehicle('Mobil Eksekutif')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            Pesan via WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEDICATED BUS GALLERY SECTION -->
+    <section id="galeri-bus" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-2 rounded-full bg-sky-100 text-sky-600 text-sm font-semibold mb-4 reveal">Lihat Lebih Dekat</span>
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-slate-900 reveal">Galeri Bus Eksekutif</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto reveal">Interior nyaman dan fasilitas modern untuk menemani perjalanan jauh Anda.</p>
+            </div>
+
+            <!-- Facilities Info -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 reveal">
+                <div class="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
+                    <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0M12 20h.01"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800">WiFi Kencang</h4>
+                    <p class="text-xs text-slate-500 mt-1">Internet gratis sepanjang jalan</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
+                    <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800">Kursi Recline</h4>
+                    <p class="text-xs text-slate-500 mt-1">Sandaran tidur 135 derajat</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
+                    <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/><circle cx="12" cy="12" r="4"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800">AC Double Blower</h4>
+                    <p class="text-xs text-slate-500 mt-1">Dingin merata sampai belakang</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
+                    <div class="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800">LCD TV</h4>
+                    <p class="text-xs text-slate-500 mt-1">Hiburan layar lebar</p>
+                </div>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-grid reveal">
+                <div class="gallery-item">
+                    <img src="jok.jpg" alt="Interior Bus">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-semibold text-lg">Interior Nyaman</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="ds.jpg" alt="Kabin Depan">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-semibold text-lg">Dashboard Profesional</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="muk.jpg" alt="Bagasi">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-semibold text-lg">Tampilan Luar</span>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <img src="bus.jpg" alt="Eksterior Bus">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-semibold text-lg">Desain Modern</span>
+                    </div>
+                </div>
+                <div class="gallery-item md:col-span-2">
+                    <img src="pig.jpg" alt="Bus di Jalan">
+                    <div class="gallery-overlay">
+                        <span class="text-white font-semibold text-lg">Siap Antar Jarak Jauh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="layanan" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-slate-900 reveal">Keunggulan Kami</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto reveal">Komitmen kami adalah memberikan pelayanan transportasi terbaik dan aman.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-3xl border border-slate-100 hover:shadow-xl hover:border-sky-100 transition-all duration-300 reveal" style="transition-delay: 0.1s">
+                    <div class="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center mb-6">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Keamanan Utama</h3>
+                    <p class="text-slate-500">Armada dilengkapi GPS tracker, asuransi perjalanan, dan pengemudi berpengalaman.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-3xl border border-slate-100 hover:shadow-xl hover:border-sky-100 transition-all duration-300 reveal" style="transition-delay: 0.2s">
+                    <div class="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center mb-6">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Tepat Waktu</h3>
+                    <p class="text-slate-500">Kami mengutamakan ketepatan waktu jemput dan tiba di tujuan.</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-3xl border border-slate-100 hover:shadow-xl hover:border-sky-100 transition-all duration-300 reveal" style="transition-delay: 0.3s">
+                    <div class="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center mb-6">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Tim Profesional</h3>
+                    <p class="text-slate-500">Sopir ramah, berpenampilan rapi, dan siap membantu kebutuhan Anda.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="booking" class="py-24 bg-white">
+        <div class="max-w-3xl mx-auto px-6">
+            <div class="bg-slate-50 p-8 md:p-12 rounded-3xl border border-slate-100 reveal-scale relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-sky-100 rounded-full -mr-20 -mt-20 opacity-50"></div>
+                <div class="absolute bottom-0 left-0 w-20 h-20 bg-sky-100 rounded-full -ml-10 -mb-10 opacity-50"></div>
+                
+                <div class="relative z-10">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold mb-2 text-slate-900">Pesan Perjalanan Anda</h2>
+                        <p class="text-slate-500">Isi form di bawah ini, tim kami akan segera menghubungi Anda.</p>
+                    </div>
+                    
+                    <form id="booking-form" class="space-y-5">
+                        <div class="grid md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Nama Lengkap</label>
+                                <input type="text" id="b-name" class="form-input" placeholder="Masukkan nama Anda" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">No. WhatsApp</label>
+                                <input type="tel" id="b-phone" class="form-input" placeholder="Contoh: 08123456789" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Armada</label>
+                            <select id="b-vehicle" class="form-input" required>
+                                <option value="" disabled selected>Pilih kendaraan...</option>
+                                <option value="Bus Eksekutif">Bus Eksekutif (59 Kursi)</option>
+                                <option value="Mobil Eksekutif">Mobil Eksekutif (6 Penumpang)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Tanggal Berangkat</label>
+                                <input type="date" id="b-date" class="form-input" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Jumlah Penumpang</label>
+                                <input type="number" id="b-pax" class="form-input" placeholder="Contoh: 10" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Rute / Titik Jemput</label>
+                            <textarea id="b-route" class="form-input h-24 resize-none" placeholder="Contoh: Jakarta - Bandung (Jemput di Hotel X)" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-wa w-full text-lg py-4 mt-4">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            Kirim Pemesanan via WhatsApp
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Map Section -->
+    <section id="contact" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 text-slate-900 reveal">Hubungi Kami</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto reveal">Kunjungi kantor kami atau hubungi melalui channel di bawah ini.</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-start">
+                <!-- Contact Info -->
+                <div class="space-y-8 reveal-left">
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+                        <h3 class="text-xl font-bold text-slate-800 mb-6">Informasi Kontak</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center flex-shrink-0">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-800">Alamat Kantor</h4>
+                                    <p class="text-slate-500 text-sm mt-1">BTN Kembang Harum 1 Blok.E No.10 RT.002 RW.007 Desa Bojongleles Kec.Cibadak Kab.Lebak Provinsi Banten , Indonesia</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center flex-shrink-0">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-800">Telepon / WhatsApp</h4>
+                                    <p class="text-slate-500 text-sm mt-1">+62 813 2090 0893</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-sky-50 flex items-center justify-center flex-shrink-0">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-slate-800">Email</h4>
+                                    <p class="text-slate-500 text-sm mt-1">cv.arzinugrahanusantar@gmail.com</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Social Media -->
+                        <div class="mt-8 pt-8 border-t border-slate-100">
+                            <h4 class="font-semibold text-slate-800 mb-4">Ikuti Kami</h4>
+                            <div class="flex gap-3">
+                                <!-- Instagram -->
+                                <a href="#" class="social-icon" aria-label="Instagram">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                                </a>
+                                <!-- Facebook -->
+                                <a href="#" class="social-icon" aria-label="Facebook">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                                </a>
+                                <!-- TikTok -->
+                                <a href="#" class="social-icon" aria-label="TikTok">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+                                </a>
+                                <!-- YouTube -->
+                                <a href="#" class="social-icon" aria-label="YouTube">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map -->
+                <div class="reveal-right">
+                    <div class="map-container bg-slate-200">
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2751.948217207393!2d106.2234075!3d-6.357307700000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e42170a97b5cc8d%3A0x48de9ee7b24342d0!2sBus%20pariwisata%20(Rizal%20Trans)!5e1!3m2!1sid!2sid!4v1774450985269!5m2!1sid!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h14a2 2 0 012 2v6a2 2 0 01-2 2M5 17l-1 4h2m12-4l1 4h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+                        </div>
+                        <span class="text-xl font-bold">Rizal Trans</span>
+                    </div>
+                    <p class="text-slate-400 text-sm max-w-sm">Partner transportasi terpercaya untuk perjalanan bisnis, wisata, dan keperluan pribadi Anda. Melayani dengan sepenuh hati.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4 text-slate-200">Layanan</h4>
+                    <ul class="space-y-3 text-sm text-slate-400">
+                        <li>Sewa Bus Rombongan</li>
+                        <li>Antar Jemput Bandara</li>
+                        <li>City Tour</li>
+                        <li>Transportasi Perusahaan</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4 text-slate-200">Tautan Penting</h4>
+                    <ul class="space-y-3 text-sm text-slate-400">
+                        <li><a href="#fleet" class="hover:text-sky-400 transition-colors">Armada Kami</a></li>
+                        <li><a href="#galeri-bus" class="hover:text-sky-400 transition-colors">Galeri Bus</a></li>
+                        <li><a href="#booking" class="hover:text-sky-400 transition-colors">Pemesanan</a></li>
+                        <li><a href="#contact" class="hover:text-sky-400 transition-colors">Kontak</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+                <p>2024 Rizal Trans. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-sky-400">Kebijakan Privasi</a>
+                    <a href="#" class="hover:text-sky-400">Syarat & Ketentuan</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const splash = document.getElementById('splash-screen');
+        
+        // Hide Splash
+        setTimeout(() => { if(splash) splash.classList.add('hidden'); }, 2500);
+
+        // Particles
+        const canvas = document.getElementById('particle-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+            resize();
+            window.addEventListener('resize', resize);
+            
+            class Particle {
+                constructor() { this.reset(); }
+                reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 2 + 1; this.speedX = (Math.random() - 0.5) * 0.5; this.speedY = (Math.random() - 0.5) * 0.5; this.opacity = Math.random() * 0.3 + 0.1; }
+                update() { this.x += this.speedX; this.y += this.speedY; if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset(); }
+                draw() { ctx.beginPath(); ctx.arc(this.x, this.y, Math.max(0.1, this.size), 0, Math.PI * 2); ctx.fillStyle = `rgba(14, 165, 233, ${this.opacity})`; ctx.fill(); }
+            }
+            
+            for (let i = 0; i < 40; i++) particles.push(new Particle());
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Reveal on Scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => observer.observe(el));
+
+        // Mobile Menu
+        const menuToggle = document.getElementById('menu-toggle');
+        const menuClose = document.getElementById('menu-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        
+        if (menuToggle) menuToggle.addEventListener('click', () => { mobileMenu.classList.add('active'); mobileOverlay.classList.add('active'); });
+        if (menuClose) menuClose.addEventListener('click', () => { mobileMenu.classList.remove('active'); mobileOverlay.classList.remove('active'); });
+        if (mobileOverlay) mobileOverlay.addEventListener('click', () => { mobileMenu.classList.remove('active'); mobileOverlay.classList.remove('active'); });
+        document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', () => { mobileMenu.classList.remove('active'); mobileOverlay.classList.remove('active'); }));
+
+        // Booking Function
+        function bookVehicle(vehicleName) {
+            const waNumber = "6281320900893"; // Ganti dengan nomor WA bisnis Anda
+            const message = `Halo Rizal Trans, saya tertarik untuk menyewa *${vehicleName}*. Mohon informasi lebih lanjut.`;
+            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        // Form Submit Handler
+        const bookingForm = document.getElementById('booking-form');
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const name = document.getElementById('b-name').value;
+                const phone = document.getElementById('b-phone').value;
+                const vehicle = document.getElementById('b-vehicle').value;
+                const date = document.getElementById('b-date').value;
+                const pax = document.getElementById('b-pax').value;
+                const route = document.getElementById('b-route').value;
+
+                const waNumber = "6281320900893"; // Ganti dengan nomor WA bisnis Anda
+                const message = `*PERMINTAAN BOOKING*\n\nNama: ${name}\nNo. HP: ${phone}\nArmada: ${vehicle}\nTanggal: ${date}\nJumlah: ${pax} orang\nRute: ${route}`;
+                
+                window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            });
+        }
+    </script>
+</body>
+</html>
